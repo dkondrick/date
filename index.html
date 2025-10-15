@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Current Date Display</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            color: #333;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h1 {
+            color: #1d3557;
+            margin-bottom: 30px;
+        }
+        p {
+            font-size: 1.2em;
+            line-height: 1.6;
+        }
+        .date-format {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        #sentenceDate {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #e63946;
+        }
+        #numericalDate {
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            color: #457b9d;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Current Date and Time</h1>
+
+        <div class="date-format">
+            <p id="sentenceDate">Loading date...</p>
+        </div>
+
+        <div class="date-format">
+            <p>Numerical Format: <span id="numericalDate">Loading...</span></p>
+        </div>
+    </div>
+
+    <script>
+        // This function runs when the page is fully loaded
+        window.onload = function() {
+            // Create a new Date object to get the current date and time
+            const now = new Date();
+
+            // --- 1. Format for "MM/DD/YY" ---
+
+            // Get month, day, and year
+            let month = now.getMonth() + 1; // getMonth() is zero-based (0-11)
+            let day = now.getDate();
+            let year = now.getFullYear().toString().slice(-2); // Get last two digits of the year
+
+            // Add a leading zero if the month or day is a single digit
+            const formattedMonth = String(month).padStart(2, '0');
+            const formattedDay = String(day).padStart(2, '0');
+
+            // Combine into the final string
+            const numericalDateString = `${formattedMonth}/${formattedDay}/${year}`;
+
+            // --- 2. Format for "Today is WEEKDAY, MONTH DAY, YEAR" ---
+
+            // Arrays to convert number values to names
+            const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+            // Get the full names and numbers
+            const weekdayName = weekdays[now.getDay()]; // getDay() is zero-based (0-6)
+            const monthName = months[now.getMonth()];
+            const dayNumber = now.getDate();
+            const fullYear = now.getFullYear();
+
+            // Combine into the final sentence
+            const sentenceDateString = `Today is ${weekdayName}, ${monthName} ${dayNumber}, ${fullYear}`;
+
+
+            // --- 3. Display the dates on the page ---
+
+            // Find the HTML elements by their IDs and update their content
+            document.getElementById('numericalDate').textContent = numericalDateString;
+            document.getElementById('sentenceDate').textContent = sentenceDateString;
+        };
+    </script>
+
+</body>
+</html>
