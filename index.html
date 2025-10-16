@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Today's Date</title>
+    <title>Current Date with Embedded Content</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -11,8 +11,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
             color: #333;
         }
         .container {
@@ -21,6 +22,8 @@
             border-radius: 10px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             text-align: center;
+            max-width: 800px;
+            width: 100%;
         }
         h1 {
             color: #1d3557;
@@ -29,78 +32,88 @@
         p {
             font-size: 1.2em;
             line-height: 1.6;
+            margin: 0; /* Removed default margin from paragraphs inside boxes */
         }
+        
+        /* UPDATED STYLES FOR THE DATE BOXES */
         .date-format {
             margin-bottom: 15px;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 20px;
+            border-radius: 8px; /* Slightly more rounded corners */
+            color: #ffffff; /* Make text white for contrast */
         }
+
+        /* NEW: Style for the red box */
+        #sentenceBox {
+            background-color: #e63946; /* Red background */
+        }
+        
+        /* NEW: Style for the blue box */
+        #numericalBox {
+            background-color: #457b9d; /* Blue background */
+        }
+        
         #sentenceDate {
             font-size: 1.4em;
             font-weight: bold;
-            color: #e63946;
         }
         #numericalDate {
             font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
-            color: #457b9d;
+            padding: 2px 6px; /* Add a little padding to the number span */
+            background-color: rgba(0, 0, 0, 0.1); /* Slight dark background for emphasis */
+            border-radius: 4px;
+        }
+        iframe {
+            margin-top: 30px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 100%;
+            height: 450px;
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1></h1>
+        <h1>Current Date and Time</h1>
 
-        <div class="date-format">
+        <div class="date-format" id="sentenceBox">
             <p id="sentenceDate">Loading date...</p>
         </div>
 
-        <div class="date-format">
-            <p><span id="numericalDate">Loading...</span></p>
+        <div class="date-format" id="numericalBox">
+            <p>Numerical Format: <span id="numericalDate">Loading...</span></p>
         </div>
+
+        <iframe 
+            src="https://en.wikipedia.org/wiki/Calendar_date"
+            title="Embedded Wikipedia article about calendar dates">
+            Your browser does not support iframes.
+        </iframe>
     </div>
 
     <script>
-        // This function runs when the page is fully loaded
+        // JavaScript remains the same - no changes needed here
         window.onload = function() {
-            // Create a new Date object to get the current date and time
             const now = new Date();
-
-            // --- 1. Format for "MM/DD/YY" ---
-
-            // Get month, day, and year
-            let month = now.getMonth() + 1; // getMonth() is zero-based (0-11)
+            let month = now.getMonth() + 1; 
             let day = now.getDate();
-            let year = now.getFullYear().toString().slice(-2); // Get last two digits of the year
-
-            // Add a leading zero if the month or day is a single digit
+            let year = now.getFullYear().toString().slice(-2);
+            
             const formattedMonth = String(month).padStart(2, '0');
             const formattedDay = String(day).padStart(2, '0');
-
-            // Combine into the final string
             const numericalDateString = `${formattedMonth}/${formattedDay}/${year}`;
 
-            // --- 2. Format for "Today is WEEKDAY, MONTH DAY, YEAR" ---
-
-            // Arrays to convert number values to names
             const weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
-            // Get the full names and numbers
-            const weekdayName = weekdays[now.getDay()]; // getDay() is zero-based (0-6)
+            
+            const weekdayName = weekdays[now.getDay()];
             const monthName = months[now.getMonth()];
             const dayNumber = now.getDate();
             const fullYear = now.getFullYear();
-
-            // Combine into the final sentence
             const sentenceDateString = `Today is ${weekdayName}, ${monthName} ${dayNumber}, ${fullYear}`;
 
-
-            // --- 3. Display the dates on the page ---
-
-            // Find the HTML elements by their IDs and update their content
             document.getElementById('numericalDate').textContent = numericalDateString;
             document.getElementById('sentenceDate').textContent = sentenceDateString;
         };
