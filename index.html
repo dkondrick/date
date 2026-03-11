@@ -1,644 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Class Roles</title>
-<style>
-  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&family=Space+Mono:wght@400;700&display=swap');
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Date & Time</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --border: #2a2d3a;
-    --scout: #f4a942;
-    --rater: #5bc8f5;
-    --ambassador: #c084fc;
-    --text: #e8eaf0;
-    --muted: #7a7f96;
-  }
+    :root {
+      --bg: #f0ece4;
+      --surface: #faf8f4;
+      --border: #d8d2c8;
+      --accent: #8a6a2e;
+      --accent-dim: rgba(138, 106, 46, 0.10);
+      --text-primary: #0e0f11;
+      --text-muted: #7a7d87;
+      --text-label: #a8a5a0;
+    }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(138, 106, 46, 0.06) 0%, transparent 70%);
+    }
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'Nunito', sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px 16px;
-    overflow-x: hidden;
-  }
+    /* ── ALL CARDS ── */
+    .cards-row {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 860px;
+    }
 
-  /* Subtle grid background */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
-    background-size: 40px 40px;
-    pointer-events: none;
-    z-index: 0;
-  }
+    .card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px 28px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      transition: border-color 0.2s ease;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(138,106,46,0.05) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .card:hover { border-color: rgba(138,106,46,0.35); }
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20px; right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .card:hover::after { opacity: 0.5; }
 
-  .wrapper {
-    position: relative;
-    z-index: 1;
-    width: 100%;
-    max-width: 860px;
-  }
+    /* Time */
+    .time-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+    }
+    .time-digits {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .time-ampm {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      padding-bottom: 4px;
+    }
 
-  header {
-    text-align: center;
-    margin-bottom: 32px;
-  }
+    /* Written date */
+    .date-written {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 3vw, 30px);
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .date-written .day-name {
+      display: block;
+      color: var(--accent);
+      font-size: clamp(12px, 1.5vw, 15px);
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
 
-  header h1 {
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    font-weight: 900;
-    letter-spacing: -0.5px;
-    background: linear-gradient(135deg, var(--scout) 0%, var(--rater) 50%, var(--ambassador) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
+    /* Numerical date */
+    .date-numerical {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
 
-  .date-line {
-    font-family: 'Space Mono', monospace;
-    font-size: 0.78rem;
-    color: var(--muted);
-    margin-top: 6px;
-    letter-spacing: 0.08em;
-  }
-
-  /* Role cards */
-  .roles {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .role-card {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 18px;
-    padding: 24px 20px 20px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
-
-  .role-card:hover { transform: translateY(-3px); }
-
-  .role-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 18px 18px 0 0;
-  }
-
-  .role-card.scout::before  { background: var(--scout); }
-  .role-card.rater::before  { background: var(--rater); }
-  .role-card.ambassador::before { background: var(--ambassador); }
-
-  .role-card.scout  { box-shadow: 0 0 30px rgba(244,169,66,0.08); }
-  .role-card.rater  { box-shadow: 0 0 30px rgba(91,200,245,0.08); }
-  .role-card.ambassador { box-shadow: 0 0 30px rgba(192,132,252,0.08); }
-
-  .role-icon {
-    font-size: 2.2rem;
-    margin-bottom: 8px;
-    display: block;
-    filter: drop-shadow(0 0 8px currentColor);
-  }
-
-  .role-label {
-    font-family: 'Space Mono', monospace;
-    font-size: 1.1rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-
-  .role-card.scout  .role-label { color: var(--scout); }
-  .role-card.rater  .role-label { color: var(--rater); }
-  .role-card.ambassador .role-label { color: var(--ambassador); }
-
-  .role-sublabel {
-    font-size: 0.75rem;
-    color: var(--muted);
-    font-family: 'Nunito', sans-serif;
-    font-weight: 700;
-    margin-top: 10px;
-    margin-bottom: 14px;
-    line-height: 1.4;
-    font-style: italic;
-  }
-
-  .student-name {
-    font-size: clamp(1.3rem, 3vw, 1.8rem);
-    font-weight: 900;
-    line-height: 1.1;
-    min-height: 2.4rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .role-card.scout  .student-name { color: var(--scout); }
-  .role-card.rater  .student-name { color: var(--rater); }
-  .role-card.ambassador .student-name { color: var(--ambassador); }
-
-  /* Spinning animation on load */
-  @keyframes pop-in {
-    0%   { transform: scale(0.5) rotate(-8deg); opacity: 0; }
-    70%  { transform: scale(1.08) rotate(1deg); opacity: 1; }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  }
-
-  .student-name.animate {
-    animation: pop-in 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
-  }
-
-  /* Description rows */
-  .desc {
-    font-size: 0.72rem;
-    color: var(--muted);
-    margin-top: 10px;
-    line-height: 1.5;
-  }
-
-  /* Week badge for ambassador */
-  .week-badge {
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    font-family: 'Space Mono', monospace;
-    font-size: 0.55rem;
-    background: rgba(192,132,252,0.15);
-    color: var(--ambassador);
-    border: 1px solid rgba(192,132,252,0.3);
-    border-radius: 20px;
-    padding: 2px 7px;
-    letter-spacing: 0.05em;
-  }
-
-  /* Controls */
-  .controls {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
-  }
-
-  button {
-    font-family: 'Nunito', sans-serif;
-    font-weight: 800;
-    font-size: 0.82rem;
-    border: none;
-    border-radius: 10px;
-    padding: 10px 20px;
-    cursor: pointer;
-    letter-spacing: 0.03em;
-    transition: all 0.15s ease;
-  }
-
-  .btn-reroll {
-    margin-top: 4px;
-    width: 100%;
-    padding: 8px 12px;
-    font-size: 0.78rem;
-    border-radius: 10px;
-    border: 1.5px solid var(--border);
-    background: rgba(255,255,255,0.04);
-    color: var(--muted);
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .role-card.scout  .btn-reroll:hover { background: rgba(244,169,66,0.12); color: var(--scout); border-color: var(--scout); }
-  .role-card.rater  .btn-reroll:hover { background: rgba(91,200,245,0.12); color: var(--rater); border-color: var(--rater); }
-  .role-card.ambassador .btn-reroll:hover { background: rgba(192,132,252,0.12); color: var(--ambassador); border-color: var(--ambassador); }
-    background: linear-gradient(135deg, var(--scout), var(--rater));
-    color: #0f1117;
-  }
-
-  .btn-shuffle:hover { opacity: 0.88; transform: scale(1.04); }
-
-  .btn-edit {
-    background: var(--surface);
-    color: var(--muted);
-    border: 1.5px solid var(--border);
-  }
-
-  .btn-edit:hover { color: var(--text); border-color: var(--muted); }
-
-  /* Student editor panel */
-  .editor {
-    display: none;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    margin-bottom: 24px;
-  }
-
-  .editor.open { display: block; }
-
-  .editor h3 {
-    font-size: 0.75rem;
-    font-family: 'Space Mono', monospace;
-    color: var(--muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .editor textarea {
-    width: 100%;
-    background: var(--bg);
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.82rem;
-    padding: 12px;
-    resize: vertical;
-    min-height: 120px;
-    outline: none;
-    line-height: 1.6;
-  }
-
-  .editor textarea:focus { border-color: var(--rater); }
-
-  .editor-note {
-    font-size: 0.68rem;
-    color: var(--muted);
-    margin-top: 8px;
-  }
-
-  .btn-save {
-    background: var(--rater);
-    color: #0f1117;
-    margin-top: 10px;
-  }
-
-  .btn-save:hover { opacity: 0.88; }
-
-  /* History log */
-  .history {
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-  }
-
-  .history h3 {
-    font-size: 0.75rem;
-    font-family: 'Space Mono', monospace;
-    color: var(--muted);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 12px;
-  }
-
-  .history-list {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    max-height: 160px;
-    overflow-y: auto;
-  }
-
-  .history-list li {
-    font-size: 0.73rem;
-    font-family: 'Space Mono', monospace;
-    color: var(--muted);
-    display: flex;
-    gap: 10px;
-    align-items: baseline;
-  }
-
-  .history-list li .hdate {
-    color: var(--border);
-    font-size: 0.65rem;
-    flex-shrink: 0;
-  }
-
-  .history-list li .hscout  { color: var(--scout); }
-  .history-list li .hrater  { color: var(--rater); }
-  .history-list li .hamb    { color: var(--ambassador); }
-
-  .empty-history {
-    font-size: 0.73rem;
-    color: var(--border);
-    font-family: 'Space Mono', monospace;
-  }
-
-  footer {
-    margin-top: 28px;
-    font-size: 0.65rem;
-    color: var(--border);
-    font-family: 'Space Mono', monospace;
-    text-align: center;
-  }
-</style>
+    /* pulse on seconds tick */
+    @keyframes tick {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+    .colon { animation: tick 1s step-start infinite; }
+  </style>
 </head>
 <body>
-<div class="wrapper">
 
-  <div class="roles">
-    <!-- Scout -->
-    <div class="role-card scout">
-      <span class="role-icon">🔭</span>
-      <div class="role-label">Scout</div>
-      <div class="student-name" id="scoutName">—</div>
-      <div class="role-sublabel">Shout out a friend who has been doing the right thing!</div>
-      <button class="btn-reroll" onclick="rerollOne('scout')">🔀 Re-roll</button>
+  <div class="cards-row">
+
+    <!-- TIME CARD -->
+    <div class="card">
+      <div class="time-display">
+        <div class="time-digits" id="time-hms">12<span class="colon">:</span>00<span class="colon">:</span>00</div>
+        <div class="time-ampm" id="time-ampm">AM</div>
+      </div>
     </div>
 
-    <!-- Rater -->
-    <div class="role-card rater">
-      <span class="role-icon">⭐</span>
-      <div class="role-label">Rater</div>
-      <div class="student-name" id="raterName">—</div>
-      <div class="role-sublabel">Rate our class as a whole from 1 – 4</div>
-      <button class="btn-reroll" onclick="rerollOne('rater')">🔀 Re-roll</button>
+    <!-- WRITTEN DATE CARD -->
+    <div class="card">
+      <div class="date-written">
+        <span id="written-month-day">March 10,</span>
+        <span id="written-year">2026</span>
+        <span class="day-name" id="day-name">Monday</span>
+      </div>
     </div>
 
-    <!-- Ambassador -->
-    <div class="role-card ambassador">
-      <span class="role-icon">🚪</span>
-      <div class="role-label">Ambassador</div>
-      <div class="student-name" id="ambassadorName">—</div>
-      <div class="role-sublabel">Greet new people who come to our door.</div>
-      <button class="btn-reroll" onclick="rerollOne('ambassador')">🔀 Re-roll</button>
+    <!-- NUMERICAL DATE CARD -->
+    <div class="card">
+      <div class="date-numerical" id="numerical-date">3/10/26</div>
     </div>
+
   </div>
 
+  <script>
+    const DAY_NAMES  = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const MONTH_NAMES = ['January','February','March','April','May','June',
+                         'July','August','September','October','November','December'];
 
+    function pad(n) { return String(n).padStart(2, '0'); }
 
-  <div class="editor" id="editor">
-    <h3>Student List</h3>
-    <textarea id="studentTextarea" placeholder="One name per line..."></textarea>
-    <div class="editor-note">One name per line. Changes save automatically.</div>
-    <button class="btn-save" onclick="saveStudents()">✓ Save List</button>
-  </div>
+    function update() {
+      const now = new Date();
 
-  <div class="history">
-    <h3>Recent Assignments</h3>
-    <ul class="history-list" id="historyList">
-      <li class="empty-history">No history yet.</li>
-    </ul>
-  </div>
+      // Time
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const mins = pad(now.getMinutes());
+      const secs = pad(now.getSeconds());
 
-  <footer>roles reset automatically · built for ClassroomScreen embed</footer>
-</div>
+      document.getElementById('time-hms').innerHTML =
+        `${hours}<span class="colon">:</span>${mins}<span class="colon">:</span>${secs}`;
+      document.getElementById('time-ampm').textContent = ampm;
 
-<script>
-  // ── Default students ──────────────────────────────────────────────
-  const DEFAULT_STUDENTS = ['Autumn','Bryan','Ellie','Kyla','Nate','Treyvon','Alena'];
+      // Written date
+      const d = now.getDate();
+      const m = now.getMonth();
+      const y = now.getFullYear();
+      const dow = now.getDay();
 
-  // ── Storage keys ──────────────────────────────────────────────────
-  const KEY_STUDENTS   = 'cr_students';
-  const KEY_DAILY      = 'cr_daily';       // { date, scout, rater }
-  const KEY_WEEKLY     = 'cr_weekly';      // { weekKey, ambassador }
-  const KEY_SCOUT_BAG  = 'cr_scout_bag';   // remaining names in scout rotation
-  const KEY_RATER_BAG  = 'cr_rater_bag';   // remaining names in rater rotation
-  const KEY_AMB_BAG    = 'cr_amb_bag';     // remaining names in ambassador rotation
-  const KEY_HISTORY    = 'cr_history';     // array of log entries
+      document.getElementById('day-name').textContent   = DAY_NAMES[dow];
+      document.getElementById('written-month-day').textContent = `${MONTH_NAMES[m]} ${d},`;
+      document.getElementById('written-year').textContent      = y;
 
-  // ── Helpers ───────────────────────────────────────────────────────
-  function today() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  }
-
-  function weekKey() {
-    const d = new Date();
-    const jan4 = new Date(d.getFullYear(), 0, 4);
-    const week = Math.ceil(((d - jan4) / 86400000 + jan4.getDay() + 1) / 7);
-    return `${d.getFullYear()}-W${String(week).padStart(2,'0')}`;
-  }
-
-  function weekNum() {
-    return parseInt(weekKey().split('-W')[1], 10);
-  }
-
-  function load(key, fallback) {
-    try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
-  }
-
-  function save(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
-  }
-
-  function getStudents() {
-    return load(KEY_STUDENTS, DEFAULT_STUDENTS);
-  }
-
-  // Fisher-Yates shuffle
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  // ── Shuffle-bag: draw one from the bag, refill when empty ─────────
-  // bagKey  — localStorage key for the remaining pool
-  // exclude — names that must not be drawn this turn (e.g. already-assigned roles)
-  // Returns the drawn name and saves the updated bag.
-  function drawFromBag(bagKey, exclude) {
-    const students = getStudents();
-
-    let bag = load(bagKey, []);
-
-    // Remove any students no longer in the class from the bag
-    bag = bag.filter(s => students.includes(s));
-
-    // If bag is empty (or every remaining name is excluded), refill it.
-    // Refill: all students except the last person who had this role
-    // (to avoid immediate repeat at the boundary between cycles).
-    if (bag.filter(s => !exclude.includes(s)).length === 0) {
-      // Who was last drawn? That's whoever is NOT in a full bag.
-      // Simplest: just reset to full student list, then remove excludes temporarily.
-      bag = shuffle(students);
+      // Numerical date  M/D/YY
+      const yy = String(y).slice(-2);
+      document.getElementById('numerical-date').textContent = `${m + 1}/${d}/${yy}`;
     }
 
-    // Pick first name from bag that isn't excluded
-    let idx = bag.findIndex(s => !exclude.includes(s));
-    if (idx === -1) {
-      // Edge case: all remaining bag entries are excluded (tiny class).
-      // Fall back: pick any non-excluded student at random.
-      const pool = students.filter(s => !exclude.includes(s));
-      const picked = pool.length ? pool[Math.floor(Math.random() * pool.length)] : students[0];
-      // Don't modify bag in this fallback.
-      return picked;
-    }
-
-    const picked = bag[idx];
-    bag.splice(idx, 1);
-    save(bagKey, bag);
-    return picked;
-  }
-
-  // ── Core logic ────────────────────────────────────────────────────
-  function assignRoles(forceReshuffle = false) {
-    const todayStr = today();
-    const wk       = weekKey();
-
-    // Ambassador — weekly rotation bag
-    let weekly = load(KEY_WEEKLY, null);
-    if (!weekly || weekly.weekKey !== wk) {
-      const amb = drawFromBag(KEY_AMB_BAG, []);
-      weekly = { weekKey: wk, ambassador: amb };
-      save(KEY_WEEKLY, weekly);
-    }
-
-    // Scout + Rater — daily rotation bags
-    let daily = load(KEY_DAILY, null);
-    if (!daily || daily.date !== todayStr || forceReshuffle) {
-      const scout = drawFromBag(KEY_SCOUT_BAG, [weekly.ambassador]);
-      const rater = drawFromBag(KEY_RATER_BAG, [weekly.ambassador, scout]);
-      daily = { date: todayStr, scout, rater };
-      save(KEY_DAILY, daily);
-      logHistory(daily.date, daily.scout, daily.rater, weekly.ambassador);
-    }
-
-    return { scout: daily.scout, rater: daily.rater, ambassador: weekly.ambassador };
-  }
-
-  function logHistory(date, scout, rater, ambassador) {
-    let hist = load(KEY_HISTORY, []);
-    hist = hist.filter(h => h.date !== date);
-    hist.unshift({ date, scout, rater, ambassador });
-    if (hist.length > 20) hist = hist.slice(0, 20);
-    save(KEY_HISTORY, hist);
-  }
-
-  // ── Display ───────────────────────────────────────────────────────
-  function setName(id, name) {
-    const el = document.getElementById(id);
-    el.textContent = name;
-    el.classList.remove('animate');
-    void el.offsetWidth;
-    el.classList.add('animate');
-  }
-
-  function bagStatus(bagKey, role) {
-    const students = getStudents();
-    const bag = load(bagKey, []).filter(s => students.includes(s));
-    const remaining = bag.length;
-    const total = students.length;
-    // How many have already gone this cycle
-    const done = total - remaining;
-    return `${done}/${total} have had ${role} this cycle`;
-  }
-
-  function render(roles) {
-    setName('scoutName', roles.scout);
-    setName('raterName', roles.rater);
-    setName('ambassadorName', roles.ambassador);
-
-    const hist = load(KEY_HISTORY, []);
-    const ul = document.getElementById('historyList');
-    if (!hist.length) {
-      ul.innerHTML = '<li class="empty-history">No history yet.</li>';
-      return;
-    }
-    ul.innerHTML = hist.map(h =>
-      `<li>
-        <span class="hdate">${h.date}</span>
-        <span class="hscout">🔭 ${h.scout}</span>
-        <span class="hrater">⭐ ${h.rater}</span>
-        <span class="hamb">🌟 ${h.ambassador}</span>
-      </li>`
-    ).join('');
-  }
-
-  // ── Per-card reroll ───────────────────────────────────────────────
-  function rerollOne(role) {
-    const wk   = weekKey();
-    let weekly = load(KEY_WEEKLY, null);
-    let daily  = load(KEY_DAILY, null) || { date: today(), scout: '', rater: '' };
-
-    if (!weekly || weekly.weekKey !== wk) {
-      weekly = { weekKey: wk, ambassador: drawFromBag(KEY_AMB_BAG, []) };
-      save(KEY_WEEKLY, weekly);
-    }
-
-    if (role === 'scout') {
-      daily.scout = drawFromBag(KEY_SCOUT_BAG, [weekly.ambassador, daily.rater]);
-    } else if (role === 'rater') {
-      daily.rater = drawFromBag(KEY_RATER_BAG, [weekly.ambassador, daily.scout]);
-    } else if (role === 'ambassador') {
-      weekly.ambassador = drawFromBag(KEY_AMB_BAG, [daily.scout, daily.rater]);
-      save(KEY_WEEKLY, weekly);
-    }
-
-    daily.date = today();
-    save(KEY_DAILY, daily);
-    logHistory(daily.date, daily.scout, daily.rater, weekly.ambassador);
-    render({ scout: daily.scout, rater: daily.rater, ambassador: weekly.ambassador });
-  }
-
-  // ── UI actions ────────────────────────────────────────────────────
-  function shuffleAll() {
-    // Re-roll today's Scout + Rater from their bags (Ambassador stays)
-    const wk   = weekKey();
-    let weekly = load(KEY_WEEKLY, null);
-    if (!weekly || weekly.weekKey !== wk) {
-      const amb = drawFromBag(KEY_AMB_BAG, []);
-      weekly = { weekKey: wk, ambassador: amb };
-      save(KEY_WEEKLY, weekly);
-    }
-    const scout = drawFromBag(KEY_SCOUT_BAG, [weekly.ambassador]);
-    const rater = drawFromBag(KEY_RATER_BAG, [weekly.ambassador, scout]);
-    const daily = { date: today(), scout, rater };
-    save(KEY_DAILY, daily);
-    logHistory(daily.date, daily.scout, daily.rater, weekly.ambassador);
-    render({ scout: daily.scout, rater: daily.rater, ambassador: weekly.ambassador });
-  }
-
-  function toggleEditor() {
-    const ed   = document.getElementById('editor');
-    const open = ed.classList.toggle('open');
-    if (open) {
-      document.getElementById('studentTextarea').value = getStudents().join('\n');
-    }
-  }
-
-  function saveStudents() {
-    const lines = document.getElementById('studentTextarea').value
-      .split('\n').map(s => s.trim()).filter(Boolean);
-    if (lines.length < 3) { alert('Please enter at least 3 students.'); return; }
-    save(KEY_STUDENTS, lines);
-    document.getElementById('editor').classList.remove('open');
-    // Clear everything so rotations restart fresh with the new list
-    [KEY_DAILY, KEY_WEEKLY, KEY_SCOUT_BAG, KEY_RATER_BAG, KEY_AMB_BAG].forEach(k =>
-      localStorage.removeItem(k)
-    );
-    init();
-  }
-
-  // ── Boot ──────────────────────────────────────────────────────────
-  function init() {
-    render(assignRoles(false));
-  }
-
-  init();
-</script>
+    update();
+    setInterval(update, 1000);
+  </script>
 </body>
 </html>
