@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Date & Time — Dark</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0f11;
+      --surface: #16181c;
+      --border: #2a2d34;
+      --accent: #c9a96e;
+      --text-primary: #f0ece4;
+      --text-muted: #7a7d87;
+    }
+
+    body {
+      background: var(--bg);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      background-image:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201, 169, 110, 0.07) 0%, transparent 70%);
+    }
+
+    .cards-row {
+      display: flex;
+      gap: 16px;
+      width: 100%;
+      max-width: 860px;
+    }
+
+    .card {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 28px 28px;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+      transition: border-color 0.2s ease;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(201,169,110,0.06) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .card:hover { border-color: rgba(201,169,110,0.35); }
+    .card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 20px; right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+    .card:hover::after { opacity: 0.5; }
+
+    .time-display {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+    }
+    .time-digits {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(28px, 4vw, 44px);
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+      line-height: 1;
+    }
+    .time-ampm {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      padding-bottom: 4px;
+    }
+
+    .date-written {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(22px, 3vw, 30px);
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+    .date-written .day-name {
+      display: block;
+      color: var(--accent);
+      font-size: clamp(12px, 1.5vw, 15px);
+      font-family: 'DM Mono', monospace;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    .date-numerical {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+      line-height: 1;
+    }
+
+    @keyframes tick {
+      0%   { opacity: 1; }
+      50%  { opacity: 0.4; }
+      100% { opacity: 1; }
+    }
+    .colon { animation: tick 1s step-start infinite; }
+  </style>
+</head>
+<body>
+
+  <div class="cards-row">
+
+    <div class="card">
+      <div class="time-display">
+        <div class="time-digits" id="time-hms">12<span class="colon">:</span>00<span class="colon">:</span>00</div>
+        <div class="time-ampm" id="time-ampm">AM</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="date-written">
+        <span id="written-month-day">March 10,</span>
+        <span id="written-year">2026</span>
+        <span class="day-name" id="day-name">Monday</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="date-numerical" id="numerical-date">3/10/26</div>
+    </div>
+
+  </div>
+
+  <script>
+    const DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const MONTH_NAMES = ['January','February','March','April','May','June',
+                         'July','August','September','October','November','December'];
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function update() {
+      const now = new Date();
+
+      let hours = now.getHours();
+      const ampm = hours >= 12 ? 'PM' : 'AM';
+      hours = hours % 12 || 12;
+      const mins = pad(now.getMinutes());
+      const secs = pad(now.getSeconds());
+
+      document.getElementById('time-hms').innerHTML =
+        `${hours}<span class="colon">:</span>${mins}<span class="colon">:</span>${secs}`;
+      document.getElementById('time-ampm').textContent = ampm;
+
+      const d   = now.getDate();
+      const m   = now.getMonth();
+      const y   = now.getFullYear();
+      const dow = now.getDay();
+
+      document.getElementById('day-name').textContent          = DAY_NAMES[dow];
+      document.getElementById('written-month-day').textContent = `${MONTH_NAMES[m]} ${d},`;
+      document.getElementById('written-year').textContent      = y;
+
+      const yy = String(y).slice(-2);
+      document.getElementById('numerical-date').textContent = `${m + 1}/${d}/${yy}`;
+    }
+
+    update();
+    setInterval(update, 1000);
+  </script>
+</body>
+</html>
